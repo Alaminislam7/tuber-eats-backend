@@ -6,6 +6,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 export class Restaurant {
     @PrimaryGeneratedColumn()
+    @Field(type => Number)
     id: number
 
     @Field(type => String)
@@ -23,4 +24,8 @@ export class Restaurant {
     @Field(type=>String)
     @Column()
     ownersName: string;
+
+    @Field(type=>String)
+    @Column()
+    categoryName: string;
 }

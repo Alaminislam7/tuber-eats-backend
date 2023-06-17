@@ -11,7 +11,12 @@ export class UsersResolver {
     hi() {
         return true;
     }
+
     @Mutation(returns => CreateAccountOutput)
-    createAccount(@Args("input") createAccount: CreateAccountInput ) {}
+    async createAccount(
+      @Args('input') createAccountInput: CreateAccountInput,
+    ): Promise<CreateAccountOutput> {
+      return this.userService.createAccount(createAccountInput);
+    }
 
 }

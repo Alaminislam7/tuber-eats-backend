@@ -64,10 +64,5 @@ export class UserServices {
 
     async findById (id: number): Promise<User> {
         return this.users.findOne({ where: {id}});
-        // try {
-
-        // } catch (err) {
-        //     return { ok: false, error: 'User Not Found' };
-        // }
     }
 }

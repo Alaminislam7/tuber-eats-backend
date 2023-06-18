@@ -5,11 +5,13 @@ import { join } from 'path';
 import { RestaurantsModule } from './restaurants/restaurants.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import * as Joi from 'joi';
 import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { User } from './users/entities/user.entity';
+import { JwtModule } from './jwt/jwt.module';
 
 
 @Module({
@@ -27,6 +29,7 @@ import { User } from './users/entities/user.entity';
         DB_USERNAME: Joi.string(),
         DB_PASSWORD: Joi.string(),
         DB_NAME: Joi.string(),
+        PRIVATE_KEY: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRoot({
@@ -49,7 +52,17 @@ import { User } from './users/entities/user.entity';
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: true
+      autoSchemaFile: true,
+      context: ({ req, connection }) => {
+        const TOKEN_KEY = 'x-jwt';
+        return {
+          token: req ? req.headers[TOKEN_KEY] : connection.context[TOKEN_KEY],
+        };
+      },
+    }),
+    ScheduleModule.forRoot(),
+    JwtModule.forRoot({
+      privateKey: process.env.PRIVATE_KEY,
     }),
     UsersModule,
     CommonModule,

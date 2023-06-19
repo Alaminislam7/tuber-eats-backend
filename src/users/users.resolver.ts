@@ -7,6 +7,7 @@ import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { AuthGuard } from "src/auth/auth.guard";
 import { AuthUser } from "src/auth/auth-user.decorator";
 import { UserProfileInput, UserProfileOutput } from "./dtos/user-profile.dto";
+import { EditProfileInput, EditProfileOutput } from "./dtos/edit-profile.dto";
 
 
 @Resolver(of => User)
@@ -55,6 +56,15 @@ export class UsersResolver {
           error: "User Not Found",
         }
       }
+    }
+
+    @UseGuards(AuthGuard)
+    @Mutation(returns => EditProfileOutput)
+    async editProfile(
+      @AuthUser() authUser: User,
+      @Args('input') editProfileInput: EditProfileInput,
+    ): Promise<EditProfileOutput> {
+      return this.userService.editProfile(authUser.id, editProfileInput);
     }
 
 }

@@ -5,6 +5,7 @@ import { Repository } from "typeorm";
 import { CreateAccountInput, CreateAccountOutput } from "./dtos/create-account.dto";
 import { LoginInput, LoginOutput } from "./dtos/login.dto";
 import { JwtService } from "src/jwt/jwt.service";
+import { EditProfileInput, EditProfileOutput } from "./dtos/edit-profile.dto";
 
 @Injectable()
 export class UserServices {
@@ -65,4 +66,32 @@ export class UserServices {
     async findById (id: number): Promise<User> {
         return this.users.findOne({ where: {id}});
     }
+
+    async editProfile(
+        userId: any,
+
+        
+        // userId: number,
+
+
+
+        { email, password }: EditProfileInput,
+      ): Promise<EditProfileOutput> {
+        try {
+            
+          const user = await this.users.findOneBy(userId);
+          if (email) {
+            user.email = email;
+          }
+          if (password) {
+            user.password = password;
+          }
+          await this.users.save(user);
+          return {
+            ok: true,
+          };
+        } catch (error) {
+          return { ok: false, error: 'Could not update profile.' };
+        }
+      }
 }

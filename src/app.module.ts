@@ -14,6 +14,8 @@ import { User } from './users/entities/user.entity';
 import { JwtModule } from './jwt/jwt.module';
 import { JwtMiddleware } from './jwt/jwt.middleware';
 import { AuthModule } from './auth/auth.module';
+import { VerificationModule } from './verification/verification.module';
+import { Verification } from './users/entities/verification.entity';
 
 
 @Module({
@@ -49,7 +51,8 @@ import { AuthModule } from './auth/auth.module';
       logging:
         process.env.NODE_ENV !== 'prod' && process.env.NODE_ENV !== 'test',
       entities: [
-        User
+        User,
+        Verification
       ],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -62,6 +65,7 @@ import { AuthModule } from './auth/auth.module';
       privateKey: process.env.PRIVATE_KEY,
     }),
     UsersModule,
+    VerificationModule,
   ],
 })
 export class AppModule implements NestModule {

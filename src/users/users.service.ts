@@ -105,14 +105,21 @@ export class UserServices {
         }
       }
 
-      async verifyEmail(code: string): Promise<boolean> {
-        const verification = await this.verifications.findOne({ 
-          where: {code}, relations: ['user'],
-        });
-          if(verification) {
-            console.log(verification, verification.user.verified)
+      async verifyEmail(code: string): Promise<VerifyEmailOutPut> {
+        try {
+          const verification = await this.verifications.findOne({ 
+            where: {code}, relations: ['user'],
+          });
+          if (verification) {
+            verification.user.verified = true;
+            await this.users.save(verification.user);
+            await this.verifications.delete(verification.id);
+            return { ok: true };
           }
-          return false;
+          return { ok: false, error: 'Verification not found.' };  
+        } catch (error) {
+          return { ok: false, error: 'Could not verify email.' };
+        }
       }
 
 }

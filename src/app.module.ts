@@ -17,6 +17,7 @@ import { AuthModule } from './auth/auth.module';
 import { VerificationModule } from './verification/verification.module';
 import { Verification } from './users/entities/verification.entity';
 import { MailModule } from './mail/mail.module';
+import { Category } from './restaurants/entities/category.entity';
 
 
 @Module({
@@ -56,7 +57,9 @@ import { MailModule } from './mail/mail.module';
         process.env.NODE_ENV !== 'prod' && process.env.NODE_ENV !== 'test',
       entities: [
         User,
-        Verification
+        Verification,
+        Category,
+        Restaurant
       ],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -75,6 +78,7 @@ import { MailModule } from './mail/mail.module';
     }),
     UsersModule,
     VerificationModule,
+    RestaurantsModule
   ],
 })
 export class AppModule implements NestModule {

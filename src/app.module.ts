@@ -77,8 +77,8 @@ import { Category } from './restaurants/entities/category.entity';
       fromEmail: process.env.MAILGUN_FROM_EMAIL,
     }),
     UsersModule,
-    VerificationModule,
-    RestaurantsModule
+    RestaurantsModule,
+    AuthModule
   ],
 })
 export class AppModule implements NestModule {

@@ -6,6 +6,9 @@ import { CreateRestaurantInput, CreateRestaurantOutput } from './dtos/create-res
 import { User } from "src/users/entities/user.entity";
 import { Category } from "./entities/category.entity";
 import { EditRestaurantInput, EditRestaurantOutput } from './dtos/edit-restaurant.dto';
+import { DeleteRestaurantInput, DeleteRestaurantOutput } from "./dtos/delete-restaurant.dto";
+import { AllCategoriesOutput } from "./dtos/all-categories.dto";
+import { CategoryInput, CategoryOutput } from "src/users/dtos/category.dto";
 
 
 @Injectable()
@@ -33,7 +36,6 @@ export class RestaurantService {
         }
         return category;
     }
-
 
     async createRestaurant(
         owner: User,
@@ -106,6 +108,97 @@ export class RestaurantService {
             return {
                 ok: false,
                 error: "Could not edit Restaurant"
+            }
+        }
+    }
+
+    async deleteRestaurant(
+        owner: User,
+        { restaurantId } : DeleteRestaurantInput
+    ): Promise <DeleteRestaurantOutput> {
+        try {
+            const restaurant = await this.restaurants.findOne({
+                where: {
+                    id: restaurantId
+                }
+            });
+            if(!restaurant) {
+                return {
+                    ok: false,
+                    error: "Restaurant not found"
+                }
+            }
+            if (owner.id !== restaurant.ownerId) {
+                return {
+                    ok: false,
+                    error: "You can't delete a restaurant that you don't own",
+                }
+            }
+            await this.restaurants.delete(restaurantId);
+            return {
+                ok: true,
+            }
+        } catch {
+            return {
+                ok: false,
+                error: 'Could not delete restaurant.',
+              };
+        }
+    }
+
+    async allCategories(): Promise<AllCategoriesOutput>{
+        try{
+            const categories = await this.categories.find();
+            return {
+                ok: true,
+                categories
+            }
+        } catch {
+            return {
+                ok: false,
+                error: 'Could not load categories',
+            };
+        }
+    }
+    
+    // countRestaurants(category: Category) {
+    //     return this.restaurants.count({ category });
+    // }
+
+    async findCategoryBySlug({
+        slug,
+        page
+    }: CategoryInput): Promise<CategoryOutput> {
+        try {
+            const category = await this.categories.findOne({    
+                select: {
+                    slug: true
+                },
+            });
+            if (!category) {
+                return {
+                  ok: false,
+                  error: 'Category not found',
+                };
+            }
+            const restaurants = await this.restaurants.find({
+                where: {
+                    category: true,
+                },
+                take: 25,
+                skip: (page - 1) * 25,
+            })
+            // const totalResults = await this.countRestaurants(category);
+            return {
+                ok: true,
+                restaurants,
+                category,
+                // totalPages: Math.ceil(totalResults / 25),
+            };
+        } catch {
+            return {
+                ok: false,
+                error: 'Could not find category'
             }
         }
     }

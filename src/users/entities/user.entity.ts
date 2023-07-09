@@ -36,8 +36,8 @@ export class User extends CoreEntity {
 
     @Field(type => [Restaurant])
     @OneToMany(
-        type => Restaurant,
-        restaurant => restaurant.owner,
+      type => Restaurant,
+      restaurant => restaurant.owner,
     )
     restaurants: Restaurant[];
 
